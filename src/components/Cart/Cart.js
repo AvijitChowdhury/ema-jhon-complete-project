@@ -1,14 +1,19 @@
 import React from 'react';
 
+
 const Cart = (props) => {
     const cart = props.cart;
-    console.log(cart);
+   // console.log(cart);
 
+
+    //we can use reduce for total
     //const total = cart.reduce((total,product)=>total+product.price,0);
+    //total calculatin using for loop
     let total = 0;
     for(let i= 0 ;i< cart.length ;i++){
         const product =cart[i];
-        total= total + product.price;
+        total= total + product.price*product.quantity;
+        
     }
 
     //shipping
@@ -40,7 +45,12 @@ const Cart = (props) => {
             <p>Product Price: {formatNumber(total)}</p>
             <p><small>Shipping Cost:{shipping}</small></p>
             <p><small>Tax + VAT: {tax}</small></p>
-            <p>Total Price:{grandTotal}</p>
+            <p className='btn-danger'>Total Price:{grandTotal}</p>
+            <br />
+            {
+                props.children
+            }
+            
         </div>
     );
 };
