@@ -1,13 +1,45 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useForm } from "react-hook-form";
-import './Shipment.css';
+import { getDatabaseCart, processOrder } from '../../utilities/databaseManager';
 import { UserContext } from './../../App';
-import { useContext } from 'react';
+import './Shipment.css';
 
 const Shipment = () => {
     const [LoggedInUser,setLoggedInUser] = useContext(UserContext);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = data => console.log('form submitted',data);
+    const onSubmit = data => {
+      console.log('form submitted',data)
+    
+      const savedCart = getDatabaseCart();
+      const orderDetails = {
+        ...LoggedInUser,
+        products : savedCart,
+        shipment : data,
+        orderTime : new Date(),
+      };
+      fetch('https://damp-cove-13433.herokuapp.com/addOrders',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(orderDetails)
+
+      })
+      .then(res=>res.json())
+      .then((data)=>{
+        processOrder();
+        setInterval(()=>{
+          console.log(data);
+      
+          if(data=1){
+         
+            alert('Your order placed succesfully');
+          }
+        },10000);
+
+    
+      })
+    };
   
     console.log(watch("example")); // watch input value by passing the name of it
   

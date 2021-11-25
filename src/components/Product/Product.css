@@ -23,3 +23,7 @@
 .er{
     align-items: baseline;
 }
+.pdImage img{
+    width: 200px;
+    margin-right: 20px;
+}

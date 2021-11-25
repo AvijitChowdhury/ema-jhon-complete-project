@@ -1,23 +1,20 @@
 
-import './App.css';
-import Header from './components/Header/Header';
-import Shop from './components/Shop/Shop';
+import { createContext, useState } from 'react';
 //react rounter
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
+  BrowserRouter as Router, Route, Switch
 } from "react-router-dom";
-import Review from './components/Review/Review';
+import './App.css';
+import Header from './components/Header/Header';
 import Inventory from './components/Inventory/Inventory';
-import NotFound from './components/NotFound/NotFound';
-import ProductDetail from './components/ProductDetail/ProductDetail';
 import Login from './components/Login/Login';
-import Shipment from './components/Shipment/Shipment';
-import { createContext, useState } from 'react';
-
+import NotFound from './components/NotFound/NotFound';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
+import ProductDetail from './components/ProductDetail/ProductDetail';
+import Review from './components/Review/Review';
+import Shipment from './components/Shipment/Shipment';
+import Shop from './components/Shop/Shop';
+
 
 export const UserContext = createContext();
 
@@ -28,8 +25,8 @@ function App() {
   return (
     
     <UserContext.Provider value={[LoggedInUser,setLoggedInUser]}>
-      {/* <h3>Email: {LoggedInUser.email}</h3>
-      */}
+      { <h3>Email: {LoggedInUser?.email}</h3>
+      }
       <Router>
         <Header></Header>
         <Switch>
@@ -40,9 +37,9 @@ function App() {
               <Review></Review>
           </Route>
           
-          <Route path="/inventory">
+          <PrivateRoute path="/inventory">
               <Inventory></Inventory>
-          </Route>
+          </PrivateRoute>
           
           <Route path="/login">
               <Login></Login>

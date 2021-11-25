@@ -1,17 +1,15 @@
-import React, { useContext } from 'react';
-import './Login.css';
-import { initializeApp } from 'firebase/app';
-import firebaseConfig from './firebase-config';
-import { GoogleAuthProvider } from "firebase/auth";
-import { getAuth, signInWithPopup} from "firebase/auth";
-import { useState } from 'react';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useContext, useState } from 'react';
+import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import {Form} from 'react-bootstrap';
-import {  signInWithEmailAndPassword } from "firebase/auth";
-
+import { useHistory, useLocation } from 'react-router';
 import { UserContext } from '../../App';
-import { useHistory, useLocation, Redirect } from 'react-router';
-import { handleFbSignIn, handleGoogleSignIn, initializeLoginFramework, signOutButton ,CreateUserWithEmailAndPassword, SignInWithEmailAndPassword } from './LoginManager';
+import './Login.css';
+import { CreateUserWithEmailAndPassword, handleFbSignIn, handleGoogleSignIn, initializeLoginFramework, resetPassword, SignInWithEmailAndPassword, signOutButton } from './LoginManager';
+
+
+
 
 
 function Login() {
@@ -24,6 +22,8 @@ function Login() {
     Photo:'',
     
   });
+  console.log(user);
+ 
   //firebase authentication
   //initializeApp(firebaseConfig);
   initializeLoginFramework();
@@ -40,7 +40,15 @@ function Login() {
 const googleSignIn = ()=>{
   handleGoogleSignIn()
   .then(res=>{
+  //  console.log(res);
+    const {Name,Email,Photo} = res;
+    // setUser(displayName,email,photoURL);
+    // setLoggedInUser(displayName,email,photoURL);
+   // console.log(Name,Email,Photo);
+    setUser({Name,Email,Photo});
+    setLoggedInUser({Name,Email,Photo});
     handleResponse(res,true);
+    
   })
 }
 const SignOut = ()=>{
@@ -100,7 +108,7 @@ const handleResponse = (res , redirect)=>{
           handleResponse(res,true);
         })
     }
-    //signed in
+    // signed in
     if(!newUser && user.Email && user.Password){
         SignInWithEmailAndPassword(user.Email,user.Password)
         .then(res=>{
@@ -114,17 +122,17 @@ const handleResponse = (res , redirect)=>{
     <div className='Login'>
       <br />
       {
-        user.isSignedIn ?<Button variant="info" onClick={SignOut}>Sign Out</Button>
-        :<Button variant="info" onClick={googleSignIn}>Sign In</Button>
+        user?.isSignedIn ?<Button variant="info" onClick={SignOut}>Sign Out</Button>
+        :<Button variant="info" onClick={googleSignIn}><FontAwesomeIcon icon={faSignInAlt}/> Sign In</Button>
       }
       <br />
-      <Button onClick={FbSignIn}>Sign In Using Facebook</Button>
+      <Button onClick={FbSignIn}><FontAwesomeIcon icon={faSignInAlt}/> Sign In Using Facebook</Button>
       {
-          user.isSignedIn&&
+          user?.isSignedIn&&
           <div>
-          <h2>Welcome {user.Name}</h2>
-          <h3>Email: {user.Email}</h3>
-          <img src={user.Photo} alt="" />          
+          <h2>Welcome {user?.Name}</h2>
+          <h3>Email: {user?.Email}</h3>
+          <img src={user?.Photo} alt="" />          
           </div>
       }
       <h2>Our Own Authentication</h2>
@@ -153,12 +161,14 @@ const handleResponse = (res , redirect)=>{
           {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
             <Form.Check type="checkbox" label="Check me out" />
           </Form.Group> */}
-          <Button variant="primary"  type="submit" onClick={handleSubmit}>
+          <Button variant="primary"  type="submit" onClick={handleSubmit} style={{marginRight:'100px'}}>
             {newUser ? 'Sign Up' : 'Sign In'}
           </Button>
-          <p style={{color:'red'}}>{user.error}</p>
           
-          {user.success && <p style={{color:'green'}}>User {newUser ?'created' :'Logged In'} Succesfully</p>}
+          <Button variant="danger" onClick={()=>resetPassword(user.Email)}>Forgot or Reset Password </Button>
+          <p style={{color:'red'}}>{user?.error}</p>
+          
+          {user?.success && <p style={{color:'green'}}>User {newUser ?'created' :'Logged In'} Succesfully</p>}
           </Form>
     </div>
   );

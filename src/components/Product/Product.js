@@ -9,7 +9,7 @@ const Product = (props) => {
     const {img,name,seller,price,stock,key} =props.product;
     return (
         <div className='product'>
-            <div > 
+            <div className="pdImage" > 
                 <img src={img} alt="" />
             </div>
             <div>

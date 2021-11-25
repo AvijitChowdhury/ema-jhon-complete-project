@@ -1,13 +1,9 @@
-import React, { useState,useEffect } from 'react';
-
-import fakeData from '../../fakeData/index';
-import { getDatabaseCart, processOrder, removeFromDatabaseCart } from '../../utilities/databaseManager';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
+import happyimage from '../../images/giphy.gif';
+import { getDatabaseCart, removeFromDatabaseCart } from '../../utilities/databaseManager';
 import Cart from '../Cart/Cart';
 import ReviewItem from '../ReviewItem/ReviewItem';
-import happyimage from '../../images/giphy.gif';
-import { useHistory } from 'react-router';
-
-
 
 const Review = () => {
   
@@ -21,7 +17,6 @@ const Review = () => {
         // setOrderPlaced(true);
         // processOrder();
         history.push('/shipment');
-
     };
 
     const handleRemoveProduct =(productKey)=>{
@@ -37,8 +32,9 @@ const Review = () => {
         const savedCart = getDatabaseCart();
         const productKeys = Object.keys(savedCart);
       
-        console.log(productKeys);
-        console.log(fakeData);
+       // console.log(productKeys);
+       // console.log(fakeData);
+
         // let cartProducts = [];
         // for(let i=0 ;i< productKeys.length ;i++){
         //     console.log(productKeys[i]);
@@ -47,19 +43,28 @@ const Review = () => {
         //             cartProducts.push(fakeData[j]);
         //         }
         //     }
-            
+        
         // }
         // console.log(cartProducts);
 
-        const cartProducts = productKeys.map((key )=>{
-            const product = fakeData.find(pd=> pd.key===key);
-            product.quantity = savedCart[key];
-            console.log(product.quantity);
-            console.log(product);
-            return product;      
-        });
-        console.log(cartProducts);
-        setCart(cartProducts);
+        fetch('https://damp-cove-13433.herokuapp.com/productByKeys',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(productKeys)
+        }).then(res=>res.json())
+        .then(data=>setCart(data));
+
+        // const cartProducts = productKeys.map((key )=>{
+        //     const product = fakeData.find(pd=> pd.key===key);
+        //     product.quantity = savedCart[key];
+        //     console.log(product.quantity);
+        //     console.log(product);
+        //     return product;      
+        // });
+        // console.log(cartProducts);
+        // setCart(cartProducts);
     },[]);
 
 

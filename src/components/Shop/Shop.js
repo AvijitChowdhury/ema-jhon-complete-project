@@ -1,30 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import fakeData from '../../fakeData';
-import Product from '../Product/Product';
-import {addToDatabaseCart, getDatabaseCart} from '../../utilities/databaseManager'
-
-import './Shop.css';
-import Cart from './../Cart/Cart';
 import { Link } from 'react-router-dom';
+import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
+import Product from '../Product/Product';
+import Cart from './../Cart/Cart';
+import './Shop.css';
+
 
 const Shop = () => {
-    const first10 = fakeData.slice(0,10);
-    const [products,setProducts] = useState(first10);
+    //const first10 = fakeData.slice(0,10);
+   // const [products,setProducts] = useState(first10);
+   const [products,setProducts] = useState([]);
     //car count
     const [cart , setCart] = useState([]);
+
+    useEffect(()=>{
+        fetch('https://damp-cove-13433.herokuapp.com/products')
+        .then(res=>res.json())
+        .then(data=>setProducts(data))
+    },[]);
 
     useEffect(()=>{
         const savedCart = getDatabaseCart();
         //console.log(savedCart);
         const productKeys = Object.keys(savedCart);
+       if(products.length>0){
         const previousCart = productKeys.map(existingKey=>{
-            const product= fakeData.find(pd =>pd.key === existingKey);
+           // const product= fakeData.find(pd =>pd.key === existingKey);
+           const product = products.find(pd=>pd.key===existingKey);
             product.quantity = savedCart[existingKey];
             return product;
+            
         });
         console.log(previousCart);
         setCart(previousCart);
-    },[]);
+       }
+   
+    },[products]);
 
     const handleAddProduct = (product)=>{
         //console.log('Product- added',product);

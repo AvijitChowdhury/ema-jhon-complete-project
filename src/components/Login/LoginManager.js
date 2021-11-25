@@ -1,13 +1,7 @@
 import { initializeApp } from 'firebase/app';
+import { createUserWithEmailAndPassword, FacebookAuthProvider, getAuth, GoogleAuthProvider, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import firebaseConfig from './firebase-config';
-import { GoogleAuthProvider } from "firebase/auth";
-import { FacebookAuthProvider } from "firebase/auth";
-import { getAuth, signInWithPopup} from "firebase/auth";
-import {  signOut } from "firebase/auth";
 
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import {  signInWithEmailAndPassword } from "firebase/auth";
-import { updateProfile } from "firebase/auth";
 
 
 
@@ -22,25 +16,39 @@ export const handleGoogleSignIn = ()=>{
     const provider = new GoogleAuthProvider();
     // console.log('clicked');
     const auth = getAuth();
-    return signInWithPopup(auth, provider)
-      .then((result) => {
-        // console.log(result);
-        const {displayName,email,photoURL} = result.user;
-        const signedIn={
-          isSignedIn:true,
-          Name:displayName,
-          Email:email,
-          Photo:photoURL,
-          success:true,
-        }
-        //setUser(signedIn);
-        return signedIn;
-        console.log(displayName,email,photoURL);
-      }).catch((error) => {
-        console.log(error);
-        console.log(error.message);
-      });
+    // return signInWithPopup(auth, provider)
+    //   .then((result) => {
+    //     // console.log(result);
+    //     const {displayName,email,photoURL} = result.user;
+    //     const signedIn={
+    //       isSignedIn:true,
+    //       Name:displayName,
+    //       Email:email,
+    //       Photo:photoURL,
+    //       success:true,
+    //     }
+    //     //setUser(signedIn);
+    //     return signedIn;
+    //     console.log(displayName,email,photoURL);
+    //   }).catch((error) => {
+    //     console.log(error);
+    //     console.log(error.message);
+    //   });
+    return signInWithPopup(auth, provider).then(result=>{
+      const {displayName,email,photoURL} = result.user;
+          const signedIn={
+            isSignedIn:true,
+            Name:displayName,
+            Email:email,
+            Photo:photoURL,
+            success:true,
+          }
+          //setUser(signedIn);
+          return signedIn;
+    })
+      
   }
+
   //Sign out
   export  const signOutButton = ()=>{
     const auth = getAuth();
@@ -109,8 +117,11 @@ export const handleGoogleSignIn = ()=>{
         newUserInfo.error = '';
         newUserInfo.success =  true;
         //setUser(newUserInfo);
+        updateUserProfile(name); 
+        verifyEmail();
         return newUserInfo;
-        updateUserProfile(name);
+        
+        
         // console.log(user);
       })
       .catch((error) => {
@@ -159,7 +170,7 @@ export const handleGoogleSignIn = ()=>{
   export const updateUserProfile= (name)=>{
     const auth = getAuth();
     updateProfile(auth.currentUser, {
-      displayName: `${name}`,
+      displayName:name,
     }).then(() => {
       // Profile updated!
       console.log('user profile updated succesfully');
@@ -170,4 +181,28 @@ export const handleGoogleSignIn = ()=>{
       // ...
     });
   }
+
+  //verify email
+  const verifyEmail = ()=>{
+      const auth = getAuth();
+      sendEmailVerification(auth.currentUser)
+        .then(() => {
+          // Email verification sent!
+          // ...
+        });
+  }
+
+
+export const resetPassword = (email)=>{
+  const auth = getAuth();
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      // Password reset email sent!
+      // ..
+    })
+    .catch((error) => {
+      console.log(error);
+      // ..
+    });
+}
   
