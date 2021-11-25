@@ -12,6 +12,7 @@
 <li>NodeJs</li>
 <li>Express</li>
 <li>MongoDB</li>
+<li>Firebase</li>
 
 </ul>
 
